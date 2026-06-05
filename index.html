@@ -54,7 +54,8 @@
       margin-bottom: 10px;
     }
 
-    .challenge-meta {
+    .challenge-meta,
+    .curse-meta {
       font-size: 20px;
       font-weight: bold;
       margin-bottom: 14px;
@@ -364,28 +365,120 @@
 
     const curses = {
       low: [
-        "Low Item 1",
-        "Low Item 2",
-        "Low Item 3",
-        "Low Item 4",
-        "Low Item 5",
-        "Low Item 6"
+        {
+          name: "Backwards Names",
+          level: "Low",
+          cost: "50 coins",
+          description: "For the next 10 minutes, Chasers must call each other only by their names backwards. If they forget, they must stop moving for 30 seconds before continuing."
+        },
+        {
+          name: "Wrong Hand",
+          level: "Low",
+          cost: "50 coins",
+          description: "For the next 10 minutes, one Chaser must use their non-dominant hand whenever using their phone."
+        },
+        {
+          name: "Photo Tax — Easy",
+          level: "Low",
+          cost: "50 coins",
+          description: "Before the Chasers may board their next public transport vehicle, they must take a photo of one of these: a station clock, a bench, or a ticket machine."
+        },
+        {
+          name: "Silly Walk Zone",
+          level: "Low",
+          cost: "50 coins",
+          description: "For the next 5 minutes, Chasers must use a silly walk whenever walking outside. Normal walking is allowed inside stations, on stairs, near roads, in crowds, or anywhere silly walking would be unsafe."
+        },
+        {
+          name: "Single File",
+          level: "Low",
+          cost: "50 coins",
+          description: "For the next 10 minutes, Chasers must walk in single file whenever walking outside or inside a station. They do not need to walk single file on stairs, escalators, crowded platforms, near roads, or anywhere it would be unsafe."
+        },
+        {
+          name: "Quiet Mode",
+          level: "Low",
+          cost: "50 coins",
+          description: "For the next 10 minutes, Chasers may only speak in whispers. Normal speaking is allowed if needed for safety, directions, or talking to transport staff."
+        }
       ],
+
       medium: [
-        "Medium Item 1",
-        "Medium Item 2",
-        "Medium Item 3",
-        "Medium Item 4",
-        "Medium Item 5",
-        "Medium Item 6"
+        {
+          name: "Lemon Passenger",
+          level: "Medium",
+          cost: "100 coins",
+          description: "Before the Chasers may board their next public transport vehicle, one Chaser must have a lemon visibly on them. The lemon may be held, placed visibly in a pocket, attached to clothing, or carried in another clearly visible way. Once the lemon is visible, they may use public transport again. The lemon must stay visible for 15 minutes."
+        },
+        {
+          name: "Silent Chasers",
+          level: "Medium",
+          cost: "100 coins",
+          description: "For the next 10 minutes, Chasers may not speak, whisper, or message each other. They may only communicate by gestures. Speaking is allowed only for safety, directions, or talking to transport staff."
+        },
+        {
+          name: "Freeze Roll — Medium",
+          level: "Medium",
+          cost: "100 coins",
+          description: "Roll one die. The Chasers are frozen exactly where they are for 1 × the number rolled minutes. For example, a roll of 4 means they are frozen for 4 minutes. During the freeze, they may not move, walk, board public transport, get off public transport, or change platforms. They may use their phones. If they are already on public transport, they must stay on that vehicle until the freeze time ends. If the vehicle reaches the end of the line before the freeze ends, they must get off at the final stop and remain frozen there until the time is over."
+        },
+        {
+          name: "Photo Tax — Medium",
+          level: "Medium",
+          cost: "100 coins",
+          description: "Before the Chasers may board their next public transport vehicle, they must photograph all three: a station clock, a bench, and a ticket machine."
+        },
+        {
+          name: "No Maps",
+          level: "Medium",
+          cost: "100 coins",
+          description: "For the next 10 minutes, Chasers may not use map apps, route-planning apps, or live navigation. They may use station signs, departure boards, printed maps, and memory."
+        },
+        {
+          name: "One Vehicle Wait",
+          level: "Medium",
+          cost: "100 coins",
+          description: "The Chasers must let the next usable public transport vehicle depart without boarding it. After it leaves, they may continue normally."
+        }
       ],
+
       high: [
-        "High Item 1",
-        "High Item 2",
-        "High Item 3",
-        "High Item 4",
-        "High Item 5",
-        "High Item 6"
+        {
+          name: "Freeze Roll — High",
+          level: "High",
+          cost: "150 coins",
+          description: "Roll one die. The Chasers are frozen exactly where they are for 2 × the number rolled minutes. For example, a roll of 4 means they are frozen for 8 minutes. During the freeze, they may not move, walk, board public transport, get off public transport, or change platforms. They may use their phones. If they are already on public transport, they must stay on that vehicle until the freeze time ends. If the vehicle reaches the end of the line before the freeze ends, they must get off at the final stop and remain frozen there until the time is over."
+        },
+        {
+          name: "One-Stop Penalty",
+          level: "High",
+          cost: "150 coins",
+          description: "On their next public transport ride, the Chasers must get off after exactly one stop, wait 3 minutes, and then continue."
+        },
+        {
+          name: "Curse of the Express Route",
+          level: "High",
+          cost: "150 coins",
+          description: "If the Chasers are already on public transport when this curse is played, they must stay on that vehicle for at least 3 more stops before getting off. If they are not on public transport, then on their next public transport ride, they must stay on that vehicle for at least 3 stops before getting off. If the vehicle reaches the end of the line before 3 stops, they must stay on until the final stop."
+        },
+        {
+          name: "Photo Quest Curse",
+          level: "High",
+          cost: "150 coins",
+          description: "Before the Chasers may board their next public transport vehicle, they must photograph all three: a fountain, a yellow postbox, and a station clock."
+        },
+        {
+          name: "No Maps — Extreme",
+          level: "High",
+          cost: "150 coins",
+          description: "For the next 20 minutes, Chasers may not use map apps, route-planning apps, or live navigation. They may use station signs, departure boards, printed maps, and memory."
+        },
+        {
+          name: "Two-Vehicle Wait",
+          level: "High",
+          cost: "150 coins",
+          description: "The Chasers must let the next two usable public transport vehicles depart without boarding them. After the second usable vehicle leaves, they may continue normally."
+        }
       ]
     };
 
@@ -413,7 +506,10 @@
       const selectedCurse = items[randomIndex];
 
       document.getElementById("curseResult").innerHTML = `
-        <div class="curse-title">${selectedCurse}</div>
+        <div class="curse-title">${selectedCurse.name}</div>
+        <div class="curse-meta">${selectedCurse.level} Curse — ${selectedCurse.cost}</div>
+        <div class="curse-description">${selectedCurse.description}</div>
+        <div class="note">The Runner must pay for this curse immediately. If the Runner does not have enough coins, the curse cannot be bought.</div>
       `;
     }
   </script>
