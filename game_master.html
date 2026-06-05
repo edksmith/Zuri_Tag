@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jet Lag: Tag — Zürich Edition | Game Master</title>
+
+  <style>
+    :root {
+      --bg: #f6f7f8;
+      --card: #ffffff;
+      --text: #1f2933;
+      --muted: #667085;
+      --border: #d0d5dd;
+      --accent: #2563eb;
+      --danger: #b42318;
+      --success: #027a48;
+      --warning: #b54708;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1050px;
+      margin: 24px auto;
+      padding: 16px;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    h1, h2, h3 {
+      margin-top: 0;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin-top: -8px;
+    }
+
+    .section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 18px;
+      box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .status-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      background: #fafafa;
+    }
+
+    .status-label {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .status-value {
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .status-value.small {
+      font-size: 18px;
+    }
+
+    button {
+      font-size: 16px;
+      padding: 12px 16px;
+      margin: 5px 4px 5px 0;
+      cursor: pointer;
+      border-radius: 9px;
+      border: 1px solid #344054;
+      background: white;
+    }
+
+    button:hover {
+      background: #f2f4f7;
+    }
+
+    button.primary {
+      color: white;
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    button.primary:hover {
+      background: #1d4ed8;
+    }
+
+    button.danger {
+      color: white;
+      background: var(--danger);
+      border-color: var(--danger);
+    }
+
+    button.success {
+      color: white;
+      background: var(--success);
+      border-color: var(--success);
+    }
+
+    button.warning {
+      color: white;
+      background: var(--warning);
+      border-color: var(--warning);
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+
+    input, select {
+      font-size: 16px;
+      padding: 11px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      margin: 5px 4px 5px 0;
+      max-width: 100%;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 700;
+      margin-top: 8px;
+      margin-bottom: 4px;
+    }
+
+    .result {
+      margin-top: 14px;
+      padding: 16px;
+      border-radius: 12px;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      font-size: 18px;
+      line-height: 1.4;
+    }
+
+    .title-big {
+      font-size: 25px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .meta {
+      font-size: 17px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #344054;
+    }
+
+    .note {
+      font-size: 14px;
+      color: var(--muted);
+      margin-top: 10px;
+    }
+
+    .alert {
+      padding: 12px 14px;
+      border-radius: 10px;
+      margin: 10px 0;
+      font-weight: 700;
+    }
+
+    .alert.danger {
+      background: #fee4e2;
+      color: #912018;
+      border: 1px solid #fecdca;
+    }
+
+    .alert.success {
+      background: #dcfae6;
+      color: #05603a;
+      border: 1px solid #abefc6;
+    }
+
+    .alert.warning {
+      background: #fef0c7;
+      color: #93370d;
+      border: 1px solid #fedf89;
+    }
+
+    .log {
+      max-height: 420px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fbfbfb;
+      padding: 10px;
+    }
+
+    .log-entry {
+      border-bottom: 1px solid #e4e7ec;
+      padding: 10px 4px;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .log-entry:last-child {
+      border-bottom: none;
+    }
+
+    .log-main {
+      font-weight: 700;
+    }
+
+    .log-sub {
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: end;
+    }
+
+    .curse-pill {
+      display: inline-block;
+      padding: 8px 10px;
+      margin: 4px 4px 4px 0;
+      border-radius: 999px;
+      background: #e0ecff;
+      border: 1px solid #b2ccff;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .curse-control {
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fafafa;
+      margin-bottom: 10px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 800px) {
+      .grid, .grid-2 {
+        grid-template-columns: 1fr;
+      }
+
+      body {
+        margin: 0;
+        padding: 10px;
+      }
+
+      .status-value {
+        font-size: 22px;
+      }
+
+      button, input, select {
+        width: 100%;
+        margin-right: 0;
+      }
+
+      .row {
+        display: block;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Jet Lag: Tag — Zürich Edition</h1>
+  <p class="subtitle">Game Master dashboard. This device is the official source of truth. The status panel can also be mirrored in a view-only player page later.</p>
+
+  <div id="message"></div>
+
+  <div class="section">
+    <h2>Current Game Status</h2>
+    <div class="grid">
+      <div class="status-card">
+        <div class="status-label">Current Runner</div>
+        <div id="currentRunnerDisplay" class="status-value small">None</div>
+      </div>
+      <div class="status-card">
+        <div class="status-label">Current Coins</div>
+        <div id="coinsDisplay" class="status-value">0</div>
+      </div>
+      <div class="status-card">
+        <div class="status-label">Challenges Completed This Run</div>
+        <div id="challengesCompletedDisplay" class="status-value">0 / 5</div>
+      </div>
+      <div class="status-card">
+        <div class="status-label">Active Challenge</div>
+        <div id="activeChallengeDisplay" class="status-value small">None</div>
+      </div>
+    </div>
+
+    <div class="status-card" style="margin-top: 12px;">
+      <div class="status-label">Active Curses</div>
+      <div id="activeCursesDisplay" class="status-value small">None</div>
+    </div>
+
+    <div class="grid-2" style="margin-top: 12px;">
+      <div class="status-card">
+        <div class="status-label">Runner Freeze</div>
+        <div id="runnerFreezeDisplay" class="status-value small">Not frozen</div>
+      </div>
+      <div class="status-card">
+        <div class="status-label">Chaser Freeze</div>
+        <div id="chaserFreezeDisplay" class="status-value small">Not frozen</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Start New Run</h2>
+    <p class="note">Use this at the start of the game and after every tag. It resets the Runner to 100 coins, clears the active challenge, resets completed challenges to 0, and starts the 20-minute Chaser freeze.</p>
+
+    <div class="row">
+      <div>
+        <label for="runnerSelect">Runner</label>
+        <select id="runnerSelect">
+          <option value="Paddy">Paddy</option>
+          <option value="Daddy & Ronan">Daddy & Ronan</option>
+          <option value="Mummy">Mummy</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="startLocationInput">Start / tag location</label>
+        <input id="startLocationInput" type="text" placeholder="e.g. Kloten or Zürich HB" />
+      </div>
+
+      <button class="primary" onclick="startNewRun()">Start New Run</button>
+      <button class="warning" onclick="endCurrentRunAsTagged()">End Run: Tagged</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Challenge Control</h2>
+    <p class="note">The Runner may only have one active challenge. Completing a challenge adds coins and increments the challenge count. Failing starts a 15-minute Runner freeze.</p>
+
+    <button class="primary" onclick="pickChallenge()">Select Challenge</button>
+    <button class="success" onclick="completeChallenge()">Challenge Complete</button>
+    <button class="warning" onclick="failChallenge()">Challenge Failed</button>
+    <button onclick="clearActiveChallenge()">Clear Active Challenge Without Coins</button>
+
+    <div id="challengeResult" class="result">No active challenge.</div>
+
+    <div id="redBlueControls" class="result hidden">
+      <strong>Red or Blue Vehicle result</strong><br />
+      <button onclick="resolveRedBlueVehicle(true)">Chosen colour appeared: +80 coins</button>
+      <button onclick="resolveRedBlueVehicle(false)">Chosen colour did not appear: +30 coins</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Transport Payment</h2>
+    <p class="note">Runner pays according to SBB estimated journey time. Fast transit costs 10 coins/minute. Slow transit costs 5 coins/minute. Transport is blocked while the Runner is frozen.</p>
+
+    <div class="grid-2">
+      <div>
+        <h3>Fast Transit</h3>
+        <p class="note">S-Bahn, regional trains, IC trains, ferries/boats, cable cars.</p>
+        <label for="fastMinutes">Minutes</label>
+        <input id="fastMinutes" type="number" min="1" step="1" placeholder="minutes" />
+        <button onclick="payTransport('fast')">Pay Fast Transit</button>
+      </div>
+
+      <div>
+        <h3>Slow Transit</h3>
+        <p class="note">Buses, trams, funiculars.</p>
+        <label for="slowMinutes">Minutes</label>
+        <input id="slowMinutes" type="number" min="1" step="1" placeholder="minutes" />
+        <button onclick="payTransport('slow')">Pay Slow Transit</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Purchase a Curse</h2>
+    <p class="note">The Runner must pay immediately. The app blocks purchases that would make coins negative.</p>
+
+    <button onclick="buyCurse('low')">Buy Low Curse (50 coins)</button>
+    <button onclick="buyCurse('medium')">Buy Medium Curse (100 coins)</button>
+    <button onclick="buyCurse('high')">Buy High Curse (150 coins)</button>
+
+    <div id="curseResult" class="result">No curse selected.</div>
+
+    <div style="margin-top: 16px;">
+      <h3>Active Curse Controls</h3>
+      <p class="note">Use this when the Chasers have cleared or completed a curse. Clearing a curse does not change coins, but it is logged.</p>
+      <div id="activeCurseButtons"></div>
+      <button onclick="clearAllActiveCurses()">Clear All Active Curses</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Manual Adjustment</h2>
+    <p class="note">Use only if the Game Master needs to correct something. Every adjustment is logged.</p>
+
+    <div class="row">
+      <div>
+        <label for="adjustAmount">Coin adjustment</label>
+        <input id="adjustAmount" type="number" step="1" placeholder="+/- coins" />
+      </div>
+      <div>
+        <label for="adjustReason">Reason</label>
+        <input id="adjustReason" type="text" placeholder="Reason for adjustment" />
+      </div>
+      <button onclick="manualCoinAdjustment()">Apply Adjustment</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Transaction Log</h2>
+    <p class="note">This is the official audit trail. It is saved automatically on this device.</p>
+
+    <button onclick="copyLog()">Copy Log</button>
+    <button onclick="downloadLog()">Download Log</button>
+    <button class="danger" onclick="resetGame()">Reset Entire Game</button>
+
+    <div id="transactionLog" class="log"></div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "zuriTagGameMasterStateV1";
+    const API_URL = "https://script.google.com/macros/s/AKfycbwuBgqKRDjhhxbmsEFmC0thAC6U7bphsPm_Ii4dz4GWFJadJkIII1UKDbrz-DcXfzO7bA/exec";
+
+    const STARTING_COINS = 100;
+    const REQUIRED_CHALLENGES_TO_WIN = 5;
+    const RUNNER_FREEZE_MINUTES = 15;
+    const CHASER_FREEZE_MINUTES = 20;
+    const FAST_COST_PER_MINUTE = 10;
+    const SLOW_COST_PER_MINUTE = 5;
+
+    const curseCosts = {
+      low: 50,
+      medium: 100,
+      high: 150
+    };
+
+    const challenges = [
+      { name: "Station Clock Selfie", difficulty: "Easy", reward: 30, rewardText: "30 coins", type: "fixed", description: "Take a selfie with a station clock. The clock must be clearly visible in the photo." },
+      { name: "Fountain Finder", difficulty: "Easy", reward: 30, rewardText: "30 coins", type: "fixed", description: "Take a photo of a public fountain. The fountain must be outside or in a publicly accessible place." },
+      { name: "Bus Stop Spotter", difficulty: "Easy", reward: 30, rewardText: "30 coins", type: "fixed", description: "Take a photo of a bus stop sign. The sign must show the stop name or bus symbol clearly." },
+      { name: "Two-Platform Station", difficulty: "Easy", reward: 30, rewardText: "30 coins", type: "fixed", description: "Take a photo proving you are at a station with at least 2 platforms. The photo must show platform numbers, tracks, or signs clearly enough to verify this." },
+      { name: "Bike Rack", difficulty: "Easy", reward: 30, rewardText: "30 coins", type: "fixed", description: "Take a photo of a bicycle rack. At least one bicycle rack must be clearly visible." },
+      { name: "Public Bench", difficulty: "Easy", reward: 30, rewardText: "30 coins", type: "fixed", description: "Take a photo of a public bench. The bench must be in a public place, such as a station, park, street, square, or bus/tram stop." },
+      { name: "Station Shop", difficulty: "Easy", reward: 30, rewardText: "30 coins", type: "fixed", description: "Take a photo of a shop, kiosk, bakery, café, or takeaway place inside a station or directly beside a station." },
+      { name: "Church Steeple", difficulty: "Easy", reward: 30, rewardText: "30 coins", type: "fixed", description: "Take a photo of a church steeple. The steeple must be clearly visible." },
+      { name: "Ticket Machine Selfie", difficulty: "Easy", reward: 30, rewardText: "30 coins", type: "fixed", description: "Take a selfie with a public transport ticket machine. The ticket machine must be clearly visible." },
+      { name: "Red Train", difficulty: "Easy", reward: 30, rewardText: "30 coins", type: "fixed", description: "Take a photo of a train with red clearly visible on the front, side, or engine." },
+      { name: "Station Name Sign", difficulty: "Easy", reward: 30, rewardText: "30 coins", type: "fixed", description: "Take a photo of a station or stop name sign. The name must be readable in the photo." },
+      { name: "Public Map", difficulty: "Easy", reward: 30, rewardText: "30 coins", type: "fixed", description: "Take a photo of a public map, transport map, hiking map, local area map, or station map." },
+      { name: "Bridge Photo", difficulty: "Easy", reward: 30, rewardText: "30 coins", type: "fixed", description: "Take a photo from, under, on, or beside a bridge. The bridge must be clearly visible." },
+      { name: "Yellow Postbox", difficulty: "Easy", reward: 30, rewardText: "30 coins", type: "fixed", description: "Take a photo of a Swiss yellow postbox." },
+      { name: "Platform Number", difficulty: "Easy", reward: 30, rewardText: "30 coins", type: "fixed", description: "Take a photo clearly showing a platform number at a train, tram, or bus stop." },
+      { name: "Coin Flip — Easy", difficulty: "Easy Luck Challenge", rewardText: "20 or 50 coins", type: "coinFlipEasy", description: "The app flips a coin when you mark this complete. Heads earns 50 coins. Tails earns 20 coins." },
+
+      { name: "Four-Platform Station", difficulty: "Medium", reward: 60, rewardText: "60 coins", type: "fixed", description: "Take a photo proving you are at a station with at least 4 platforms. Platform signs, track numbers, or a station map must make this clear." },
+      { name: "Departure Board Problem", difficulty: "Medium", reward: 60, rewardText: "60 coins", type: "fixed", description: "Take a photo of a public transport departure board showing a delay, cancellation, platform change, or other travel warning." },
+      { name: "Lake or River View", difficulty: "Medium", reward: 60, rewardText: "60 coins", type: "fixed", description: "Take a photo of a lake or river. The water must be clearly visible." },
+      { name: "Three Station Names", difficulty: "Medium", reward: 60, rewardText: "60 coins", type: "fixed", description: "Take photos of 3 different station or stop name signs. All 3 names must be readable." },
+      { name: "Exactly Three Stops", difficulty: "Medium", reward: 60, rewardText: "60 coins", type: "fixed", description: "Ride a tram or bus for exactly 3 stops. Take a photo at the stop where you get off, showing the stop name." },
+      { name: "Same First Letter", difficulty: "Medium", reward: 60, rewardText: "60 coins", type: "fixed", description: "Visit two different stations or stops whose names start with the same letter. Take a photo of both station or stop name signs." },
+      { name: "Long Train", difficulty: "Medium", reward: 60, rewardText: "60 coins", type: "fixed", description: "Take a photo of a train with at least 8 carriages. The photo must show enough of the train to make the length believable." },
+      { name: "Three Transport Types", difficulty: "Medium", reward: 60, rewardText: "60 coins", type: "fixed", description: "Take photos of 3 different allowed transport types in the ZVV network. Examples: train, tram, bus, boat, cable car, or funicular." },
+      { name: "Cross Water", difficulty: "Medium", reward: 60, rewardText: "60 coins", type: "fixed", description: "Take a photo while crossing a river, lake, canal, or stream by bridge, boat, train, tram, or bus." },
+      { name: "Line Trio", difficulty: "Medium", reward: 60, rewardText: "60 coins", type: "fixed", description: "Visit 3 different stops or stations on the same transport line. Take a photo of the stop or station name at each one." },
+      { name: "ZVV Symbol", difficulty: "Medium", reward: 60, rewardText: "60 coins", type: "fixed", description: "Take a photo clearly showing a ZVV logo, ZVV zone map, or official ZVV information sign." },
+      { name: "Public Art", difficulty: "Medium", reward: 60, rewardText: "60 coins", type: "fixed", description: "Take a photo of public art, a statue, mural, sculpture, or similar outdoor artwork. A normal fountain does not count for this challenge." },
+      { name: "Luxury Car Spotting", difficulty: "Medium", reward: 60, rewardText: "60 coins", type: "fixed", description: "Take a photo of a car that ChatGPT estimates would cost at least 100,000 CHF new. The brand and model must be visible or clearly identifiable. If ChatGPT says it is unclear, the challenge does not count." },
+      { name: "Red or Blue Vehicle", difficulty: "Medium Luck Challenge", rewardText: "30 or 80 coins", type: "redBlueVehicle", description: "Before the next train, tram, or bus arrives, choose red or blue. If the vehicle has your chosen colour clearly visible, earn 80 coins. If not, earn 30 coins. The colour can be on the front, side, doors, or advertising. Take a photo of the vehicle." },
+
+      { name: "Bird Photo", difficulty: "Hard", reward: 100, rewardText: "100 coins", type: "fixed", description: "Take a photo of a real bird. The bird must be visible in the photo. Bird statues, drawings, logos, or signs do not count." },
+      { name: "Train, Tram, and Bus", difficulty: "Hard", reward: 100, rewardText: "100 coins", type: "fixed", description: "Ride a train, a tram, and a bus during the same run. Take a photo proving each transport type." },
+      { name: "No Repeated Line", difficulty: "Hard", reward: 100, rewardText: "100 coins", type: "fixed", description: "Visit 3 different stations or stops without using the same transport line twice. Take a photo at each stop or station." },
+      { name: "Four Transport Lines", difficulty: "Hard", reward: 100, rewardText: "100 coins", type: "fixed", description: "Use 4 different public transport lines during the same run. Take a photo or screenshot proving each line." },
+      { name: "Six Stops Without Getting Off", difficulty: "Hard", reward: 100, rewardText: "100 coins", type: "fixed", description: "Travel through 6 consecutive stops or stations without leaving the vehicle. Take a photo when you get on and another photo when you get off." },
+      { name: "Five-in-One Photo Set", difficulty: "Hard", reward: 100, rewardText: "100 coins", type: "fixed", description: "During the same run, take photos of all five of these things: a train, a tram, a bus, a body of water, and a church." },
+      { name: "Five Unique Stations", difficulty: "Hard", reward: 100, rewardText: "100 coins", type: "fixed", description: "Visit 5 unique stations or stops during the same run. Take a photo of each station or stop name." },
+      { name: "End of the Line", difficulty: "Hard", reward: 100, rewardText: "100 coins", type: "fixed", description: "Reach a station or stop at the end of a train, tram, bus, boat, cable car, or funicular line. Take a photo of the station or stop name and a departure board or route sign showing it is the end of the line." },
+      { name: "Three Municipalities", difficulty: "Hard", reward: 100, rewardText: "100 coins", type: "fixed", description: "Visit stops or stations in 3 different towns or municipalities during the same run. Take a photo of a station or stop name in each place." },
+      { name: "Transport Rainbow", difficulty: "Hard", reward: 100, rewardText: "100 coins", type: "fixed", description: "Take photos of vehicles from 4 different transport categories. Categories include train, tram, bus, boat, cable car, and funicular." },
+      { name: "Countdown Challenge", difficulty: "Hard", reward: 100, rewardText: "100 coins", type: "fixed", description: "Take photos of signs showing the numbers 3, 2, and 1 in that order. The numbers can be platform numbers, bus or tram line numbers, house numbers, or other public signs." },
+      { name: "Alphabet Challenge", difficulty: "Hard", reward: 100, rewardText: "100 coins", type: "fixed", description: "Take photos of station or stop names containing the letters A, E, and R. The letters can appear anywhere in the names. You may use one, two, or three station/stop names, as long as all three letters are shown." },
+      { name: "High Roll Bonus", difficulty: "Hard Luck Challenge", rewardText: "50, 100, or 150 coins", type: "highRollBonus", description: "The app rolls one die when you mark this complete. Roll 1 or 2 earns 50 coins. Roll 3 or 4 earns 100 coins. Roll 5 or 6 earns 150 coins." },
+      { name: "Risky Coin Flip", difficulty: "Hard Luck Challenge", rewardText: "30 or 150 coins", type: "riskyCoinFlip", description: "The app flips a coin when you mark this complete. Heads earns 150 coins. Tails earns 30 coins." }
+    ];
+
+    const curses = {
+      low: [
+        { name: "Backwards Names", level: "Low", cost: 50, description: "For the next 10 minutes, Chasers must call each other only by their names backwards. If they forget, they must stop moving for 30 seconds before continuing." },
+        { name: "Wrong Hand", level: "Low", cost: 50, description: "For the next 10 minutes, one Chaser must use their non-dominant hand whenever using their phone." },
+        { name: "Photo Tax — Easy", level: "Low", cost: 50, description: "Before the Chasers may board their next public transport vehicle, they must take a photo of one of these: a station clock, a bench, or a ticket machine." },
+        { name: "Silly Walk Zone", level: "Low", cost: 50, description: "For the next 5 minutes, Chasers must use a silly walk whenever walking outside. Normal walking is allowed inside stations, on stairs, near roads, in crowds, or anywhere silly walking would be unsafe." },
+        { name: "Single File", level: "Low", cost: 50, description: "For the next 10 minutes, Chasers must walk in single file whenever walking outside or inside a station. They do not need to walk single file on stairs, escalators, crowded platforms, near roads, or anywhere it would be unsafe." },
+        { name: "Quiet Mode", level: "Low", cost: 50, description: "For the next 10 minutes, Chasers may only speak in whispers. Normal speaking is allowed if needed for safety, directions, or talking to transport staff." }
+      ],
+      medium: [
+        { name: "Lemon Passenger", level: "Medium", cost: 100, description: "Before the Chasers may board their next public transport vehicle, one Chaser must have a lemon visibly on them. The lemon may be held, placed visibly in a pocket, attached to clothing, or carried in another clearly visible way. Once the lemon is visible, they may use public transport again. The lemon must stay visible for 15 minutes." },
+        { name: "Silent Chasers", level: "Medium", cost: 100, description: "For the next 10 minutes, Chasers may not speak, whisper, or message each other. They may only communicate by gestures. Speaking is allowed only for safety, directions, or talking to transport staff." },
+        { name: "Freeze Roll — Medium", level: "Medium", cost: 100, description: "Roll one die. The Chasers are frozen exactly where they are for 1 × the number rolled minutes. During the freeze, they may not move, walk, board public transport, get off public transport, or change platforms. They may use their phones. If they are already on public transport, they must stay on that vehicle until the freeze time ends. If the vehicle reaches the end of the line before the freeze ends, they must get off at the final stop and remain frozen there until the time is over." },
+        { name: "Photo Tax — Medium", level: "Medium", cost: 100, description: "Before the Chasers may board their next public transport vehicle, they must photograph all three: a station clock, a bench, and a ticket machine." },
+        { name: "No Maps", level: "Medium", cost: 100, description: "For the next 10 minutes, Chasers may not use map apps, route-planning apps, or live navigation. They may use station signs, departure boards, printed maps, and memory." },
+        { name: "One Vehicle Wait", level: "Medium", cost: 100, description: "The Chasers must let the next usable public transport vehicle depart without boarding it. After it leaves, they may continue normally." }
+      ],
+      high: [
+        { name: "Freeze Roll — High", level: "High", cost: 150, description: "Roll one die. The Chasers are frozen exactly where they are for 2 × the number rolled minutes. During the freeze, they may not move, walk, board public transport, get off public transport, or change platforms. They may use their phones. If they are already on public transport, they must stay on that vehicle until the freeze time ends. If the vehicle reaches the end of the line before the freeze ends, they must get off at the final stop and remain frozen there until the time is over." },
+        { name: "One-Stop Penalty", level: "High", cost: 150, description: "On their next public transport ride, the Chasers must get off after exactly one stop, wait 3 minutes, and then continue." },
+        { name: "Curse of the Express Route", level: "High", cost: 150, description: "If the Chasers are already on public transport when this curse is played, they must stay on that vehicle for at least 3 more stops before getting off. If they are not on public transport, then on their next public transport ride, they must stay on that vehicle for at least 3 stops before getting off. If the vehicle reaches the end of the line before 3 stops, they must stay on until the final stop." },
+        { name: "Photo Quest Curse", level: "High", cost: 150, description: "Before the Chasers may board their next public transport vehicle, they must photograph all three: a fountain, a yellow postbox, and a station clock." },
+        { name: "No Maps — Extreme", level: "High", cost: 150, description: "For the next 20 minutes, Chasers may not use map apps, route-planning apps, or live navigation. They may use station signs, departure boards, printed maps, and memory." },
+        { name: "Two-Vehicle Wait", level: "High", cost: 150, description: "The Chasers must let the next two usable public transport vehicles depart without boarding them. After the second usable vehicle leaves, they may continue normally." }
+      ]
+    };
+
+    let state = {
+      currentRunner: "",
+      currentCoins: 0,
+      challengesCompletedThisRun: 0,
+      activeChallenge: null,
+      runnerFrozenUntil: null,
+      chasersFrozenUntil: null,
+      currentRunStartLocation: "",
+      activeCurses: [],
+      transactionLog: []
+    };
+
+    function nowIso() {
+      return new Date().toISOString();
+    }
+
+    function formatTime(dateValue) {
+      const date = new Date(dateValue);
+      return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    }
+
+    function minutesFromNow(minutes) {
+      return new Date(Date.now() + minutes * 60 * 1000).toISOString();
+    }
+
+    function remainingTime(untilIso) {
+      if (!untilIso) return "";
+      const remainingMs = new Date(untilIso).getTime() - Date.now();
+      if (remainingMs <= 0) return "";
+      const totalSeconds = Math.ceil(remainingMs / 1000);
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      return `${minutes}:${String(seconds).padStart(2, "0")}`;
+    }
+
+    function isRunnerFrozen() {
+      return state.runnerFrozenUntil && new Date(state.runnerFrozenUntil).getTime() > Date.now();
+    }
+
+    function isChaserFrozen() {
+      return state.chasersFrozenUntil && new Date(state.chasersFrozenUntil).getTime() > Date.now();
+    }
+
+ function saveGame() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+
+  if (!API_URL) return;
+
+  fetch(API_URL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: {
+      "Content-Type": "text/plain"
+    },
+    body: JSON.stringify({
+      action: "saveState",
+      state
+    })
+  }).catch(() => {
+    console.warn("Could not sync to backend. Local save still worked.");
+  });
+}
+
+    function loadGame() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (!saved) return;
+      try {
+        const parsed = JSON.parse(saved);
+        state = { ...state, ...parsed };
+        if (!Array.isArray(state.activeCurses)) state.activeCurses = [];
+      } catch (error) {
+        showMessage("Could not load saved game state. Starting from a blank state.", "danger");
+      }
+    }
+
+    function addLog(actionType, description, coinsChange = 0) {
+      const entry = {
+        timestamp: nowIso(),
+        runner: state.currentRunner || "None",
+        actionType,
+        description,
+        coinsChange,
+        balanceAfter: state.currentCoins
+      };
+
+      state.transactionLog.unshift(entry);
+      saveGame();
+      render();
+    }
+
+    function showMessage(text, type = "success") {
+      const message = document.getElementById("message");
+      message.innerHTML = `<div class="alert ${type}">${text}</div>`;
+      setTimeout(() => {
+        message.innerHTML = "";
+      }, 4500);
+    }
+
+    function requireRunner() {
+      if (!state.currentRunner) {
+        showMessage("Start a run first by choosing a Runner.", "danger");
+        return false;
+      }
+      return true;
+    }
+
+    function spendCoins(amount, actionType, description) {
+      if (!requireRunner()) return false;
+
+      if (state.currentCoins < amount) {
+        showMessage(`Not enough coins. Need ${amount}, but current balance is ${state.currentCoins}.`, "danger");
+        return false;
+      }
+
+      state.currentCoins -= amount;
+      addLog(actionType, description, -amount);
+      return true;
+    }
+
+    function startNewRun() {
+      const runner = document.getElementById("runnerSelect").value;
+      const location = document.getElementById("startLocationInput").value.trim() || "Unknown location";
+
+      const confirmed = confirm(`Start a new run for ${runner} from ${location}? This will reset coins to 100 and clear the active challenge.`);
+      if (!confirmed) return;
+
+      state.currentRunner = runner;
+      state.currentCoins = STARTING_COINS;
+      state.challengesCompletedThisRun = 0;
+      state.activeChallenge = null;
+      state.runnerFrozenUntil = null;
+      state.chasersFrozenUntil = minutesFromNow(CHASER_FREEZE_MINUTES);
+      state.currentRunStartLocation = location;
+      state.activeCurses = [];
+
+      addLog("New Run", `Started new run from ${location}. Chasers frozen for ${CHASER_FREEZE_MINUTES} minutes.`, STARTING_COINS);
+      showMessage(`New run started for ${runner}. Coins reset to ${STARTING_COINS}.`);
+    }
+
+    function endCurrentRunAsTagged() {
+      if (!requireRunner()) return;
+
+      const location = prompt("Where was the Runner tagged?");
+      if (location === null) return;
+
+      const description = `Run ended because ${state.currentRunner} was tagged at ${location || "unknown location"}. Remaining coins lost: ${state.currentCoins}.`;
+      state.currentCoins = 0;
+      state.activeChallenge = null;
+      state.runnerFrozenUntil = null;
+      state.chasersFrozenUntil = null;
+      state.activeCurses = [];
+
+      addLog("Tagged", description, 0);
+      showMessage("Run ended as tagged. Start a new run for the next Runner.");
+    }
+
+    function pickChallenge() {
+      if (!requireRunner()) return;
+
+      if (isRunnerFrozen()) {
+        showMessage("Runner is frozen and cannot select a new challenge yet.", "danger");
+        return;
+      }
+
+      if (state.activeChallenge) {
+        showMessage("There is already an active challenge. Complete, fail, or clear it before selecting a new one.", "danger");
+        return;
+      }
+
+      const randomIndex = Math.floor(Math.random() * challenges.length);
+      const selectedChallenge = challenges[randomIndex];
+
+      state.activeChallenge = selectedChallenge;
+      addLog("Challenge Selected", selectedChallenge.name, 0);
+      render();
+    }
+
+    function calculateChallengeReward(challenge) {
+      if (challenge.type === "fixed") {
+        return {
+          reward: challenge.reward,
+          detail: `${challenge.name} completed`
+        };
+      }
+
+      if (challenge.type === "coinFlipEasy") {
+        const heads = Math.random() < 0.5;
+        return {
+          reward: heads ? 50 : 20,
+          detail: `${challenge.name}: app flipped ${heads ? "Heads" : "Tails"}`
+        };
+      }
+
+      if (challenge.type === "riskyCoinFlip") {
+        const heads = Math.random() < 0.5;
+        return {
+          reward: heads ? 150 : 30,
+          detail: `${challenge.name}: app flipped ${heads ? "Heads" : "Tails"}`
+        };
+      }
+
+      if (challenge.type === "highRollBonus") {
+        const roll = Math.floor(Math.random() * 6) + 1;
+        let reward = 50;
+        if (roll >= 3 && roll <= 4) reward = 100;
+        if (roll >= 5) reward = 150;
+
+        return {
+          reward,
+          detail: `${challenge.name}: app rolled ${roll}`
+        };
+      }
+
+      return null;
+    }
+
+    function completeChallenge() {
+      if (!requireRunner()) return;
+
+      if (!state.activeChallenge) {
+        showMessage("There is no active challenge to complete.", "danger");
+        return;
+      }
+
+      const challenge = state.activeChallenge;
+
+      if (challenge.type === "redBlueVehicle") {
+        document.getElementById("redBlueControls").classList.remove("hidden");
+        showMessage("Use the Red or Blue Vehicle result buttons to resolve this challenge.", "warning");
+        return;
+      }
+
+      const result = calculateChallengeReward(challenge);
+      if (!result) {
+        showMessage("This challenge needs a manual result.", "danger");
+        return;
+      }
+
+      state.currentCoins += result.reward;
+      state.challengesCompletedThisRun += 1;
+      state.activeChallenge = null;
+
+      addLog("Challenge Completed", `${result.detail}. Earned ${result.reward} coins.`, result.reward);
+      showMessage(`Challenge complete. Added ${result.reward} coins.`);
+    }
+
+    function resolveRedBlueVehicle(success) {
+      if (!requireRunner()) return;
+
+      if (!state.activeChallenge || state.activeChallenge.type !== "redBlueVehicle") {
+        showMessage("Red or Blue Vehicle is not the active challenge.", "danger");
+        return;
+      }
+
+      const reward = success ? 80 : 30;
+      const description = success
+        ? "Red or Blue Vehicle: chosen colour appeared. Earned 80 coins."
+        : "Red or Blue Vehicle: chosen colour did not appear. Earned 30 coins.";
+
+      state.currentCoins += reward;
+      state.challengesCompletedThisRun += 1;
+      state.activeChallenge = null;
+
+      addLog("Challenge Completed", description, reward);
+      showMessage(`Red or Blue Vehicle resolved. Added ${reward} coins.`);
+    }
+
+    function failChallenge() {
+      if (!requireRunner()) return;
+
+      if (!state.activeChallenge) {
+        showMessage("There is no active challenge to fail.", "danger");
+        return;
+      }
+
+      const failedName = state.activeChallenge.name;
+      state.activeChallenge = null;
+      state.runnerFrozenUntil = minutesFromNow(RUNNER_FREEZE_MINUTES);
+
+      addLog("Challenge Failed", `${failedName}. Runner frozen for ${RUNNER_FREEZE_MINUTES} minutes.`, 0);
+      showMessage(`Challenge failed. Runner frozen for ${RUNNER_FREEZE_MINUTES} minutes.`, "warning");
+    }
+
+    function clearActiveChallenge() {
+      if (!requireRunner()) return;
+
+      if (!state.activeChallenge) {
+        showMessage("There is no active challenge to clear.", "danger");
+        return;
+      }
+
+      const name = state.activeChallenge.name;
+      const confirmed = confirm(`Clear active challenge "${name}" without adding coins or freezing the Runner? Use this only for Game Master corrections.`);
+      if (!confirmed) return;
+
+      state.activeChallenge = null;
+      addLog("Challenge Cleared", `${name} cleared by Game Master without coins or freeze.`, 0);
+      showMessage("Active challenge cleared.");
+    }
+
+    function payTransport(type) {
+      if (!requireRunner()) return;
+
+      if (isRunnerFrozen()) {
+        showMessage("Runner is frozen and cannot take public transport.", "danger");
+        return;
+      }
+
+      const inputId = type === "fast" ? "fastMinutes" : "slowMinutes";
+      const minutes = parseInt(document.getElementById(inputId).value, 10);
+
+      if (!minutes || minutes <= 0) {
+        showMessage("Enter a valid number of minutes.", "danger");
+        return;
+      }
+
+      const rate = type === "fast" ? FAST_COST_PER_MINUTE : SLOW_COST_PER_MINUTE;
+      const cost = minutes * rate;
+      const label = type === "fast" ? "Fast Transit" : "Slow Transit";
+
+      const success = spendCoins(cost, label, `${label}: ${minutes} minutes × ${rate} coins/minute.`);
+      if (success) {
+        document.getElementById(inputId).value = "";
+        showMessage(`${label} paid: ${cost} coins.`);
+      }
+    }
+
+    function buyCurse(category) {
+      if (!requireRunner()) return;
+
+      const items = curses[category];
+      if (!items) {
+        showMessage("Invalid curse category.", "danger");
+        return;
+      }
+
+      const cost = curseCosts[category];
+      if (state.currentCoins < cost) {
+        showMessage(`Not enough coins for this curse. Need ${cost}, but current balance is ${state.currentCoins}.`, "danger");
+        return;
+      }
+
+      const randomIndex = Math.floor(Math.random() * items.length);
+      const selectedCurse = items[randomIndex];
+
+      state.currentCoins -= cost;
+      const activeCurse = {
+        id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        name: selectedCurse.name,
+        level: selectedCurse.level,
+        cost: selectedCurse.cost,
+        description: selectedCurse.description,
+        startedAt: nowIso()
+      };
+      state.lastCurse = selectedCurse;
+      state.activeCurses.push(activeCurse);
+
+      addLog("Curse Purchased", `${selectedCurse.level} curse purchased and added to active curses: ${selectedCurse.name}.`, -cost);
+
+      document.getElementById("curseResult").innerHTML = `
+        <div class="title-big">${escapeHtml(selectedCurse.name)}</div>
+        <div class="meta">${escapeHtml(selectedCurse.level)} Curse — ${selectedCurse.cost} coins</div>
+        <div>${escapeHtml(selectedCurse.description)}</div>
+        <div class="note">Runner has paid ${cost} coins. Message this curse to the Chasers now.</div>
+      `;
+
+      showMessage(`${selectedCurse.level} curse bought: ${selectedCurse.name}.`);
+    }
+
+    function clearActiveCurse(curseId) {
+      if (!requireRunner()) return;
+
+      if (!Array.isArray(state.activeCurses)) state.activeCurses = [];
+
+      const curse = state.activeCurses.find(item => item.id === curseId);
+      if (!curse) {
+        showMessage("Could not find that active curse.", "danger");
+        return;
+      }
+
+      const confirmed = confirm(`Clear active curse "${curse.name}"?`);
+      if (!confirmed) return;
+
+      state.activeCurses = state.activeCurses.filter(item => item.id !== curseId);
+      addLog("Curse Cleared", `${curse.level} curse cleared: ${curse.name}.`, 0);
+      showMessage(`Curse cleared: ${curse.name}.`);
+    }
+
+    function clearAllActiveCurses() {
+      if (!requireRunner()) return;
+
+      if (!Array.isArray(state.activeCurses) || state.activeCurses.length === 0) {
+        showMessage("There are no active curses to clear.", "danger");
+        return;
+      }
+
+      const confirmed = confirm("Clear all active curses?");
+      if (!confirmed) return;
+
+      const names = state.activeCurses.map(curse => curse.name).join(", ");
+      state.activeCurses = [];
+      addLog("All Curses Cleared", `Cleared all active curses: ${names}.`, 0);
+      showMessage("All active curses cleared.");
+    }
+
+    function manualCoinAdjustment() {
+      if (!requireRunner()) return;
+
+      const amount = parseInt(document.getElementById("adjustAmount").value, 10);
+      const reason = document.getElementById("adjustReason").value.trim();
+
+      if (!amount || amount === 0) {
+        showMessage("Enter a non-zero coin adjustment.", "danger");
+        return;
+      }
+
+      if (!reason) {
+        showMessage("Enter a reason for the adjustment.", "danger");
+        return;
+      }
+
+      if (state.currentCoins + amount < 0) {
+        showMessage("Adjustment would make coins negative. Not allowed.", "danger");
+        return;
+      }
+
+      state.currentCoins += amount;
+      addLog("Manual Adjustment", reason, amount);
+
+      document.getElementById("adjustAmount").value = "";
+      document.getElementById("adjustReason").value = "";
+      showMessage("Manual adjustment applied.");
+    }
+
+    function copyLog() {
+      const text = buildLogText();
+      navigator.clipboard.writeText(text)
+        .then(() => showMessage("Transaction log copied."))
+        .catch(() => showMessage("Could not copy log. Use Download Log instead.", "danger"));
+    }
+
+    function downloadLog() {
+      const text = buildLogText();
+      const blob = new Blob([text], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `zuri-tag-log-${new Date().toISOString().slice(0, 10)}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function buildLogText() {
+      const lines = [];
+      lines.push("Jet Lag: Tag — Zürich Edition Transaction Log");
+      lines.push(`Exported: ${new Date().toLocaleString()}`);
+      lines.push("");
+      [...state.transactionLog].reverse().forEach(entry => {
+        const change = entry.coinsChange > 0 ? `+${entry.coinsChange}` : `${entry.coinsChange}`;
+        lines.push(`${formatTime(entry.timestamp)} — ${entry.runner} — ${entry.actionType} — ${entry.description} — ${change} coins — Balance: ${entry.balanceAfter}`);
+      });
+      return lines.join("\n");
+    }
+
+    function resetGame() {
+      const confirmed = confirm("Reset the entire game? This deletes the saved state and transaction log on this device.");
+      if (!confirmed) return;
+
+      const secondConfirm = confirm("Are you absolutely sure? This cannot be undone unless you already downloaded/copied the log.");
+      if (!secondConfirm) return;
+
+      localStorage.removeItem(STORAGE_KEY);
+      state = {
+        currentRunner: "",
+        currentCoins: 0,
+        challengesCompletedThisRun: 0,
+        activeChallenge: null,
+        runnerFrozenUntil: null,
+        chasersFrozenUntil: null,
+        currentRunStartLocation: "",
+        activeCurses: [],
+        transactionLog: []
+      };
+      render();
+      showMessage("Game reset.", "warning");
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function renderChallenge() {
+      const container = document.getElementById("challengeResult");
+      const redBlueControls = document.getElementById("redBlueControls");
+
+      if (!state.activeChallenge) {
+        container.innerHTML = "No active challenge.";
+        redBlueControls.classList.add("hidden");
+        return;
+      }
+
+      const challenge = state.activeChallenge;
+
+      container.innerHTML = `
+        <div class="title-big">${escapeHtml(challenge.name)}</div>
+        <div class="meta">${escapeHtml(challenge.difficulty)} — ${escapeHtml(challenge.rewardText)}</div>
+        <div>${escapeHtml(challenge.description)}</div>
+        <div class="note">Remember: the Runner may only have one active challenge. If they cannot complete it, tap Challenge Failed.</div>
+      `;
+
+      if (challenge.type === "redBlueVehicle") {
+        redBlueControls.classList.remove("hidden");
+      } else {
+        redBlueControls.classList.add("hidden");
+      }
+    }
+
+    function renderActiveCurses() {
+      if (!Array.isArray(state.activeCurses)) state.activeCurses = [];
+
+      const display = document.getElementById("activeCursesDisplay");
+      const controls = document.getElementById("activeCurseButtons");
+
+      if (state.activeCurses.length === 0) {
+        display.innerHTML = "None";
+        controls.innerHTML = "<div class='note'>No active curses.</div>";
+        return;
+      }
+
+      display.innerHTML = state.activeCurses
+        .map(curse => `<span class="curse-pill">${escapeHtml(curse.level)}: ${escapeHtml(curse.name)}</span>`)
+        .join("");
+
+      controls.innerHTML = state.activeCurses.map(curse => `
+        <div class="curse-control">
+          <strong>${escapeHtml(curse.level)} Curse — ${escapeHtml(curse.name)}</strong>
+          <div class="note">Started at ${formatTime(curse.startedAt)}</div>
+          <div style="margin-top: 6px;">${escapeHtml(curse.description)}</div>
+          <button class="success" onclick="clearActiveCurse('${curse.id}')">Clear This Curse</button>
+        </div>
+      `).join("");
+    }
+
+    function renderLog() {
+      const container = document.getElementById("transactionLog");
+
+      if (state.transactionLog.length === 0) {
+        container.innerHTML = "<div class='log-entry'>No transactions yet.</div>";
+        return;
+      }
+
+      container.innerHTML = state.transactionLog.map(entry => {
+        const change = entry.coinsChange > 0 ? `+${entry.coinsChange}` : `${entry.coinsChange}`;
+        return `
+          <div class="log-entry">
+            <div class="log-main">${formatTime(entry.timestamp)} — ${escapeHtml(entry.runner)} — ${escapeHtml(entry.actionType)} — ${change} coins — Balance: ${entry.balanceAfter}</div>
+            <div class="log-sub">${escapeHtml(entry.description)}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function render() {
+      document.getElementById("currentRunnerDisplay").textContent = state.currentRunner || "None";
+      document.getElementById("coinsDisplay").textContent = state.currentCoins;
+      document.getElementById("challengesCompletedDisplay").textContent = `${state.challengesCompletedThisRun} / ${REQUIRED_CHALLENGES_TO_WIN}`;
+      document.getElementById("activeChallengeDisplay").textContent = state.activeChallenge ? state.activeChallenge.name : "None";
+
+      if (isRunnerFrozen()) {
+        document.getElementById("runnerFreezeDisplay").textContent = `${remainingTime(state.runnerFrozenUntil)} remaining`;
+      } else {
+        state.runnerFrozenUntil = null;
+        document.getElementById("runnerFreezeDisplay").textContent = "Not frozen";
+      }
+
+      if (isChaserFrozen()) {
+        document.getElementById("chaserFreezeDisplay").textContent = `${remainingTime(state.chasersFrozenUntil)} remaining`;
+      } else {
+        state.chasersFrozenUntil = null;
+        document.getElementById("chaserFreezeDisplay").textContent = "Not frozen";
+      }
+
+      saveGame();
+      renderChallenge();
+      renderActiveCurses();
+      renderLog();
+    }
+
+    loadGame();
+    render();
+    setInterval(render, 1000);
+  </script>
+</body>
+</html>
