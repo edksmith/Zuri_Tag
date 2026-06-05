@@ -23,7 +23,14 @@
       border: 1px solid #333;
     }
 
-    #result {
+    .section {
+      margin-bottom: 50px;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 12px;
+    }
+
+    .result {
       margin-top: 30px;
       font-size: 28px;
       font-weight: bold;
@@ -32,17 +39,34 @@
 </head>
 
 <body>
-  <h1>Purchase a curse!</h1>
-  <p>Select which category of curses you want to buy</p>
+  <div class="section">
+    <h1>Random Challenge</h1>
+    <p>Click the button to choose a random challenge.</p>
 
-  <button onclick="pickItem('low')">Lowest (25 coins)</button>
-  <button onclick="pickItem('medium')">Medium (50 coins)</button>
-  <button onclick="pickItem('high')">Highest (75 coins)</button>
+    <button onclick="pickChallenge()">New Challenge</button>
 
-  <div id="result"></div>
+    <div id="challengeResult" class="result"></div>
+  </div>
+
+  <div class="section">
+    <h1>Purchase a curse!</h1>
+    <p>Select which category of curses you want to buy.</p>
+
+    <button onclick="pickCurse('low')">Lowest (25 coins)</button>
+    <button onclick="pickCurse('medium')">Medium (50 coins)</button>
+    <button onclick="pickCurse('high')">Highest (75 coins)</button>
+
+    <div id="curseResult" class="result"></div>
+  </div>
 
   <script>
-    const database = {
+    const challenges = [
+      "10 Coin Challenge",
+      "20 Coin Challenge",
+      "30 Coin Challenge"
+    ];
+
+    const curses = {
       low: [
         "Low Item 1",
         "Low Item 2",
@@ -69,18 +93,25 @@
       ]
     };
 
-    function pickItem(category) {
-      const items = database[category];
+    function pickChallenge() {
+      const randomIndex = Math.floor(Math.random() * challenges.length);
+      const selectedChallenge = challenges[randomIndex];
+
+      document.getElementById("challengeResult").textContent = selectedChallenge;
+    }
+
+    function pickCurse(category) {
+      const items = curses[category];
 
       if (!items) {
-        document.getElementById("result").textContent = "Invalid category.";
+        document.getElementById("curseResult").textContent = "Invalid category.";
         return;
       }
 
       const randomIndex = Math.floor(Math.random() * items.length);
-      const selectedItem = items[randomIndex];
+      const selectedCurse = items[randomIndex];
 
-      document.getElementById("result").textContent = selectedItem;
+      document.getElementById("curseResult").textContent = selectedCurse;
     }
   </script>
 </body>
