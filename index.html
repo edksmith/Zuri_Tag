@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8" />
+ <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+ <title>Random Picker</title>
+ <style>
+   body {
+     font-family: Arial, sans-serif;
+     max-width: 700px;
+     margin: 60px auto;
+     padding: 20px;
+     text-align: center;
+   }
+
+   button {
+     font-size: 18px;
+     padding: 14px 24px;
+     margin: 8px;
+     cursor: pointer;
+     border-radius: 8px;
+     border: 1px solid #333;
+   }
+
+   #result {
+     margin-top: 30px;
+     font-size: 28px;
+     font-weight: bold;
+   }
+ </style>
+</head>
+<body>
+ <h1>Random Item Picker</h1>
+ <p>Choose a category:</p>
+
+ <button onclick="pickItem('low')">Low</button>
+ <button onclick="pickItem('medium')">Medium</button>
+ <button onclick="pickItem('high')">High</button>
+
+ <div id="result"></div>
+
+ <script>
+   const database = {
+     low: [
+       "Low Item 1",
+       "Low Item 2",
+       "Low Item 3",
+       "Low Item 4",
+       "Low Item 5",
+       "Low Item 6"
+     ],
+     medium: [
+       "Medium Item 1",
+       "Medium Item 2",
+       "Medium Item 3",
+       "Medium Item 4",
+       "Medium Item 5",
+       "Medium Item 6"
+     ],
+     high: [
+       "High Item 1",
+       "High Item 2",
+       "High Item 3",
+       "High Item 4",
+       "High Item 5",
+       "High Item 6"
+     ]
+   };
+
+   function pickItem(category) {
+     const items = database[category];
+     const randomIndex = Math.floor(Math.random() * items.length);
+     const selectedItem = items[randomIndex];
+
+     document.getElementById("result").textContent = selectedItem;
+   }
+ </script>
+</body>
+</html>
