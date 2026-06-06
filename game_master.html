@@ -579,6 +579,31 @@
       return new Date(Date.now() + minutes * 60 * 1000).toISOString();
     }
 
+    function extendFreeze(existingUntilIso, minutes) {
+      const proposedUntil = minutesFromNow(minutes);
+
+      if (!existingUntilIso) {
+        return proposedUntil;
+      }
+
+      const existingTime = new Date(existingUntilIso).getTime();
+      const proposedTime = new Date(proposedUntil).getTime();
+
+      if (Number.isNaN(existingTime)) {
+        return proposedUntil;
+      }
+
+      return proposedTime > existingTime ? proposedUntil : existingUntilIso;
+    }
+
+    function applyRunnerFreeze(minutes) {
+      state.runnerFrozenUntil = extendFreeze(state.runnerFrozenUntil, minutes);
+    }
+
+    function applyChaserFreeze(minutes) {
+      state.chasersFrozenUntil = extendFreeze(state.chasersFrozenUntil, minutes);
+    }
+
     function remainingTime(untilIso) {
       if (!untilIso) return "";
       const remainingMs = new Date(untilIso).getTime() - Date.now();
@@ -969,7 +994,7 @@
       }
 
       if (outcomeType === "freeze") {
-        state.runnerFrozenUntil = minutesFromNow(freezeMinutes);
+        applyRunnerFreeze(freezeMinutes);
         state.activeChallenge = null;
         addLog("Challenge Lost", `${challengeName}: ${detail}. Runner frozen for ${freezeMinutes} minutes.`, 0);
         showMessage(`${challengeName} lost. Runner frozen for ${freezeMinutes} minutes.`, "warning");
@@ -1008,7 +1033,7 @@
 
       const failedName = state.activeChallenge.name;
       state.activeChallenge = null;
-      state.runnerFrozenUntil = minutesFromNow(RUNNER_FREEZE_MINUTES);
+      applyRunnerFreeze(RUNNER_FREEZE_MINUTES);
 
       addLog("Challenge Failed", `${failedName}. Runner frozen for ${RUNNER_FREEZE_MINUTES} minutes.`, 0);
       showMessage(`Challenge failed. Runner frozen for ${RUNNER_FREEZE_MINUTES} minutes.`, "warning");
@@ -1077,23 +1102,43 @@
       const selectedCurse = items[randomIndex];
 
       state.currentCoins -= cost;
+
+      let curseDescription = selectedCurse.description;
+      let extraLogDetail = "";
+
+      if (selectedCurse.name === "Freeze Roll — Medium") {
+        const roll = Math.floor(Math.random() * 6) + 1;
+        const freezeMinutes = roll;
+        applyChaserFreeze(freezeMinutes);
+        curseDescription += ` App result: rolled ${roll}, so the Chasers are frozen for ${freezeMinutes} minute(s). If they were already frozen, the timer now uses whichever freeze ends later.`;
+        extraLogDetail = ` App rolled ${roll}; Chasers frozen for ${freezeMinutes} minute(s), using the longer-freeze rule.`;
+      }
+
+      if (selectedCurse.name === "Freeze Roll — High") {
+        const roll = Math.floor(Math.random() * 6) + 1;
+        const freezeMinutes = roll * 2;
+        applyChaserFreeze(freezeMinutes);
+        curseDescription += ` App result: rolled ${roll}, so the Chasers are frozen for ${freezeMinutes} minute(s). If they were already frozen, the timer now uses whichever freeze ends later.`;
+        extraLogDetail = ` App rolled ${roll}; Chasers frozen for ${freezeMinutes} minute(s), using the longer-freeze rule.`;
+      }
+
       const activeCurse = {
         id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
         name: selectedCurse.name,
         level: selectedCurse.level,
         cost: selectedCurse.cost,
-        description: selectedCurse.description,
+        description: curseDescription,
         startedAt: nowIso()
       };
-      state.lastCurse = selectedCurse;
+      state.lastCurse = { ...selectedCurse, description: curseDescription };
       state.activeCurses.push(activeCurse);
 
-      addLog("Curse Purchased", `${selectedCurse.level} curse purchased and added to active curses: ${selectedCurse.name}.`, -cost);
+      addLog("Curse Purchased", `${selectedCurse.level} curse purchased and added to active curses: ${selectedCurse.name}.${extraLogDetail}`, -cost);
 
       document.getElementById("curseResult").innerHTML = `
         <div class="title-big">${escapeHtml(selectedCurse.name)}</div>
         <div class="meta">${escapeHtml(selectedCurse.level)} Curse — ${selectedCurse.cost} coins</div>
-        <div>${escapeHtml(selectedCurse.description)}</div>
+        <div>${escapeHtml(activeCurse.description)}</div>
         <div class="note">Runner has paid ${cost} coins. Message this curse to the Chasers now.</div>
       `;
 
