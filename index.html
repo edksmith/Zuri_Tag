@@ -295,7 +295,7 @@
     const REQUIRED_CHALLENGES_TO_WIN = 5;
 
     // Leave blank until we create the Google Apps Script backend.
-    const API_URL = "https://script.google.com/macros/s/AKfycbwuBgqKRDjhhxbmsEFmC0thAC6U7bphsPm_Ii4dz4GWFJadJkIII1UKDbrz-DcXfzO7bA/exec";
+    const API_URL = "";
 
     let state = {
       currentRunner: "",
@@ -393,9 +393,14 @@
 
       const challenge = state.activeChallenge;
 
+      const selectedCountryLine = challenge.selectedCountry
+        ? `<div class="meta">Selected country: ${escapeHtml(challenge.selectedCountry)}</div>`
+        : "";
+
       container.innerHTML = `
         <div class="title-big">${escapeHtml(challenge.name)}</div>
         <div class="meta">${escapeHtml(challenge.difficulty)} — ${escapeHtml(challenge.rewardText || challenge.reward || "")}</div>
+        ${selectedCountryLine}
         <div>${escapeHtml(challenge.description)}</div>
         <div class="note">Message the Game Master when this challenge is completed or failed.</div>
       `;

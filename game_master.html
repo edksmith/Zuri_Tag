@@ -370,6 +370,8 @@
       <button onclick="resolveRedBlueVehicle(true)">Chosen colour appeared: +80 coins</button>
       <button onclick="resolveRedBlueVehicle(false)">Chosen colour did not appear: +30 coins</button>
     </div>
+
+    <div id="specialChallengeControls" class="result hidden"></div>
   </div>
 
   <div class="section">
@@ -443,7 +445,6 @@
 
   <script>
     const STORAGE_KEY = "zuriTagGameMasterStateV1";
-    const API_URL = "https://script.google.com/macros/s/AKfycbwuBgqKRDjhhxbmsEFmC0thAC6U7bphsPm_Ii4dz4GWFJadJkIII1UKDbrz-DcXfzO7bA/exec";
 
     const STARTING_COINS = 100;
     const REQUIRED_CHALLENGES_TO_WIN = 5;
@@ -457,6 +458,25 @@
       medium: 100,
       high: 150
     };
+
+    const worldCupCountries = [
+      "Austria",
+      "Belgium",
+      "Bosnia and Herzegovina",
+      "Croatia",
+      "Czechia",
+      "England",
+      "France",
+      "Germany",
+      "Netherlands",
+      "Norway",
+      "Portugal",
+      "Scotland",
+      "Spain",
+      "Sweden",
+      "Switzerland",
+      "Turkey"
+    ];
 
     const challenges = [
       { name: "Station Clock Selfie", difficulty: "Easy", reward: 30, rewardText: "30 coins", type: "fixed", description: "Take a selfie with a station clock. The clock must be clearly visible in the photo." },
@@ -474,36 +494,34 @@
       { name: "Bridge Photo", difficulty: "Easy", reward: 30, rewardText: "30 coins", type: "fixed", description: "Take a photo from, under, on, or beside a bridge. The bridge must be clearly visible." },
       { name: "Yellow Postbox", difficulty: "Easy", reward: 30, rewardText: "30 coins", type: "fixed", description: "Take a photo of a Swiss yellow postbox." },
       { name: "Platform Number", difficulty: "Easy", reward: 30, rewardText: "30 coins", type: "fixed", description: "Take a photo clearly showing a platform number at a train, tram, or bus stop." },
-      { name: "Coin Flip — Easy", difficulty: "Easy Luck Challenge", rewardText: "20 or 50 coins", type: "coinFlipEasy", description: "The app flips a coin when you mark this complete. Heads earns 50 coins. Tails earns 20 coins." },
+      { name: "Roll Your Fate — Low", difficulty: "Low Luck Challenge", rewardText: "0, 40, 50, or 60 coins", type: "rollFateLow", description: "The app rolls one die when you mark this complete. Roll 1, 2, or 3 earns 0 coins. Roll 4 earns 40 coins. Roll 5 earns 50 coins. Roll 6 earns 60 coins." },
 
-      { name: "Four-Platform Station", difficulty: "Medium", reward: 60, rewardText: "60 coins", type: "fixed", description: "Take a photo proving you are at a station with at least 4 platforms. Platform signs, track numbers, or a station map must make this clear." },
+      { name: "Cairn Challenge", difficulty: "Medium Special Challenge", rewardText: "100 coins or 5-minute Runner freeze", type: "cairnChallenge", description: "Stack 8 rocks into a standing tower. You get one try only. The tower must stand long enough to take a clear photo. Only use loose rocks or stones from a safe and legal place. Do not use rocks from private gardens, railway tracks, roads, construction sites, walls, memorials, or unsafe places. If the Runner succeeds, they earn 100 coins. If they fail, the Runner is frozen for 5 minutes." },
       { name: "Departure Board Problem", difficulty: "Medium", reward: 60, rewardText: "60 coins", type: "fixed", description: "Take a photo of a public transport departure board showing a delay, cancellation, platform change, or other travel warning." },
-      { name: "Lake or River View", difficulty: "Medium", reward: 60, rewardText: "60 coins", type: "fixed", description: "Take a photo of a lake or river. The water must be clearly visible." },
+      { name: "World Cup Fever!", difficulty: "Medium Special Challenge", rewardText: "100 coins or 5-minute Runner freeze", type: "worldCupFever", description: "The Chasers have 60 seconds to name one player on the selected country’s 2026 World Cup squad and send it to the Runner or Game Master. No Googling, ChatGPT, Wikipedia, squad lists, or lookup tools are allowed during the 60 seconds. After the answer is submitted, the Game Master verifies it using the country’s 2026 FIFA World Cup squad list. If the Chasers are correct, the Runner is frozen for 5 minutes. If they are incorrect, too late, or cannot answer, the Runner earns 100 coins." },
       { name: "Three Station Names", difficulty: "Medium", reward: 60, rewardText: "60 coins", type: "fixed", description: "Take photos of 3 different station or stop name signs. All 3 names must be readable." },
-      { name: "Exactly Three Stops", difficulty: "Medium", reward: 60, rewardText: "60 coins", type: "fixed", description: "Ride a tram or bus for exactly 3 stops. Take a photo at the stop where you get off, showing the stop name." },
+      { name: "Roll Your Fate — Medium", difficulty: "Medium Luck Challenge", rewardText: "0, 80, 100, or 120 coins", type: "rollFateMedium", description: "The app rolls one die when you mark this complete. Roll 1, 2, or 3 earns 0 coins. Roll 4 earns 80 coins. Roll 5 earns 100 coins. Roll 6 earns 120 coins." },
       { name: "Same First Letter", difficulty: "Medium", reward: 60, rewardText: "60 coins", type: "fixed", description: "Visit two different stations or stops whose names start with the same letter. Take a photo of both station or stop name signs." },
       { name: "Long Train", difficulty: "Medium", reward: 60, rewardText: "60 coins", type: "fixed", description: "Take a photo of a train with at least 8 carriages. The photo must show enough of the train to make the length believable." },
       { name: "Three Transport Types", difficulty: "Medium", reward: 60, rewardText: "60 coins", type: "fixed", description: "Take photos of 3 different allowed transport types in the ZVV network. Examples: train, tram, bus, boat, cable car, or funicular." },
       { name: "Cross Water", difficulty: "Medium", reward: 60, rewardText: "60 coins", type: "fixed", description: "Take a photo while crossing a river, lake, canal, or stream by bridge, boat, train, tram, or bus." },
-      { name: "Line Trio", difficulty: "Medium", reward: 60, rewardText: "60 coins", type: "fixed", description: "Visit 3 different stops or stations on the same transport line. Take a photo of the stop or station name at each one." },
+      { name: "How Many People Live Here?", difficulty: "Medium Special Challenge", rewardText: "100 coins or 5-minute Runner freeze", type: "populationGuess", description: "The Runner and Chasers each guess the population of the selected country. No one may look up the answer. The Game Master checks the actual population. If the Runner is closer, the Runner earns 100 coins. If the Chasers are closer, the Runner is frozen for 5 minutes. If it is exactly tied, the Game Master selects a new country or reruns the challenge." },
       { name: "ZVV Symbol", difficulty: "Medium", reward: 60, rewardText: "60 coins", type: "fixed", description: "Take a photo clearly showing a ZVV logo, ZVV zone map, or official ZVV information sign." },
       { name: "Public Art", difficulty: "Medium", reward: 60, rewardText: "60 coins", type: "fixed", description: "Take a photo of public art, a statue, mural, sculpture, or similar outdoor artwork. A normal fountain does not count for this challenge." },
       { name: "Luxury Car Spotting", difficulty: "Medium", reward: 60, rewardText: "60 coins", type: "fixed", description: "Take a photo of a car that ChatGPT estimates would cost at least 100,000 CHF new. The brand and model must be visible or clearly identifiable. If ChatGPT says it is unclear, the challenge does not count." },
       { name: "Red or Blue Vehicle", difficulty: "Medium Luck Challenge", rewardText: "30 or 80 coins", type: "redBlueVehicle", description: "Before the next train, tram, or bus arrives, choose red or blue. If the vehicle has your chosen colour clearly visible, earn 80 coins. If not, earn 30 coins. The colour can be on the front, side, doors, or advertising. Take a photo of the vehicle." },
 
       { name: "Bird Photo", difficulty: "Hard", reward: 100, rewardText: "100 coins", type: "fixed", description: "Take a photo of a real bird. The bird must be visible in the photo. Bird statues, drawings, logos, or signs do not count." },
-      { name: "Train, Tram, and Bus", difficulty: "Hard", reward: 100, rewardText: "100 coins", type: "fixed", description: "Ride a train, a tram, and a bus during the same run. Take a photo proving each transport type." },
-      { name: "No Repeated Line", difficulty: "Hard", reward: 100, rewardText: "100 coins", type: "fixed", description: "Visit 3 different stations or stops without using the same transport line twice. Take a photo at each stop or station." },
-      { name: "Four Transport Lines", difficulty: "Hard", reward: 100, rewardText: "100 coins", type: "fixed", description: "Use 4 different public transport lines during the same run. Take a photo or screenshot proving each line." },
+      { name: "Hangman Challenge", difficulty: "High Special Challenge", rewardText: "150 coins or 10-minute Runner freeze", type: "hangmanChallenge", description: "The Runner challenges the Chasers to a game of Hangman. The Game Master chooses a secret word or phrase and tells both sides how many letters are in each word. The Runner guesses first, then Runner and Chasers alternate guessing letters. The side that solves the word or phrase first wins. The Game Master decides the winner if the puzzle is not solved cleanly. If the Runner wins, they earn 150 coins. If the Runner loses, they are frozen for 10 minutes." },
+      { name: "Snack Zone Baby!", difficulty: "High Special Challenge", rewardText: "150 coins or 10-minute Runner freeze", type: "snackZoneBaby", description: "The Runner goes to a Coop, Coop Pronto, Migros, Migrolino, Kiosk, or Avec and takes a photo of one item for sale. The item must be clearly identifiable. The Chasers then have 10 minutes to find and photograph exactly the same item: same product, same size, and same quantity. If the Chasers match it in time, the Runner is frozen for 10 minutes. If the Chasers do not match it in time, the Runner earns 150 coins." },
       { name: "Six Stops Without Getting Off", difficulty: "Hard", reward: 100, rewardText: "100 coins", type: "fixed", description: "Travel through 6 consecutive stops or stations without leaving the vehicle. Take a photo when you get on and another photo when you get off." },
       { name: "Five-in-One Photo Set", difficulty: "Hard", reward: 100, rewardText: "100 coins", type: "fixed", description: "During the same run, take photos of all five of these things: a train, a tram, a bus, a body of water, and a church." },
-      { name: "Five Unique Stations", difficulty: "Hard", reward: 100, rewardText: "100 coins", type: "fixed", description: "Visit 5 unique stations or stops during the same run. Take a photo of each station or stop name." },
       { name: "End of the Line", difficulty: "Hard", reward: 100, rewardText: "100 coins", type: "fixed", description: "Reach a station or stop at the end of a train, tram, bus, boat, cable car, or funicular line. Take a photo of the station or stop name and a departure board or route sign showing it is the end of the line." },
       { name: "Three Municipalities", difficulty: "Hard", reward: 100, rewardText: "100 coins", type: "fixed", description: "Visit stops or stations in 3 different towns or municipalities during the same run. Take a photo of a station or stop name in each place." },
       { name: "Transport Rainbow", difficulty: "Hard", reward: 100, rewardText: "100 coins", type: "fixed", description: "Take photos of vehicles from 4 different transport categories. Categories include train, tram, bus, boat, cable car, and funicular." },
       { name: "Countdown Challenge", difficulty: "Hard", reward: 100, rewardText: "100 coins", type: "fixed", description: "Take photos of signs showing the numbers 3, 2, and 1 in that order. The numbers can be platform numbers, bus or tram line numbers, house numbers, or other public signs." },
       { name: "Alphabet Challenge", difficulty: "Hard", reward: 100, rewardText: "100 coins", type: "fixed", description: "Take photos of station or stop names containing the letters A, E, and R. The letters can appear anywhere in the names. You may use one, two, or three station/stop names, as long as all three letters are shown." },
-      { name: "High Roll Bonus", difficulty: "Hard Luck Challenge", rewardText: "50, 100, or 150 coins", type: "highRollBonus", description: "The app rolls one die when you mark this complete. Roll 1 or 2 earns 50 coins. Roll 3 or 4 earns 100 coins. Roll 5 or 6 earns 150 coins." },
+      { name: "Roll Your Fate — High", difficulty: "High Luck Challenge", rewardText: "0, 120, 150, or 180 coins", type: "rollFateHigh", description: "The app rolls one die when you mark this complete. Roll 1, 2, or 3 earns 0 coins. Roll 4 earns 120 coins. Roll 5 earns 150 coins. Roll 6 earns 180 coins." },
       { name: "Risky Coin Flip", difficulty: "Hard Luck Challenge", rewardText: "30 or 150 coins", type: "riskyCoinFlip", description: "The app flips a coin when you mark this complete. Heads earns 150 coins. Tails earns 30 coins." }
     ];
 
@@ -526,11 +544,12 @@
       ],
       high: [
         { name: "Freeze Roll — High", level: "High", cost: 150, description: "Roll one die. The Chasers are frozen exactly where they are for 2 × the number rolled minutes. During the freeze, they may not move, walk, board public transport, get off public transport, or change platforms. They may use their phones. If they are already on public transport, they must stay on that vehicle until the freeze time ends. If the vehicle reaches the end of the line before the freeze ends, they must get off at the final stop and remain frozen there until the time is over." },
-        { name: "One-Stop Penalty", level: "High", cost: 150, description: "On their next public transport ride, the Chasers must get off after exactly one stop, wait 3 minutes, and then continue." },
+        { name: "Curse of the Distant Cuisine", level: "High", cost: 150, description: "Before the Chasers may board their next public transport vehicle, they must find a restaurant, takeaway, café, food stand, or shop that clearly serves food from a country other than Switzerland. They must send the Runner a photo showing the name, sign, or front of the place. The photo must make it clear that the food is from another country. Once the photo is sent, the Chasers may use public transport again." },
         { name: "Curse of the Express Route", level: "High", cost: 150, description: "If the Chasers are already on public transport when this curse is played, they must stay on that vehicle for at least 3 more stops before getting off. If they are not on public transport, then on their next public transport ride, they must stay on that vehicle for at least 3 stops before getting off. If the vehicle reaches the end of the line before 3 stops, they must stay on until the final stop." },
-        { name: "Photo Quest Curse", level: "High", cost: 150, description: "Before the Chasers may board their next public transport vehicle, they must photograph all three: a fountain, a yellow postbox, and a station clock." },
+        { name: "Curse of the Mediocre Travel Agent", level: "High", cost: 150, description: "The Runner chooses a public transport stop or station that is realistically reachable by public transport from the Chasers’ current location. Before the Chasers may resume chasing normally, they must travel to that stop or station and send a photo of the stop or station name. The chosen place must be inside the allowed travel rules. If the chosen place is impossible, unsafe, or unreasonable, the Game Master may choose a fair replacement." },
         { name: "No Maps — Extreme", level: "High", cost: 150, description: "For the next 20 minutes, Chasers may not use map apps, route-planning apps, or live navigation. They may use station signs, departure boards, printed maps, and memory." },
-        { name: "Two-Vehicle Wait", level: "High", cost: 150, description: "The Chasers must let the next two usable public transport vehicles depart without boarding them. After the second usable vehicle leaves, they may continue normally." }
+        { name: "Curse of the Jammed Door", level: "High", cost: 150, description: "For the next 20 minutes, every time the Chasers want to go through a door, gate, entrance, or exit, they must roll one die first. If they roll 1 or 2, the door is jammed and they must wait frozen for 3 minutes before going through. If they roll 3, 4, 5, or 6, the door opens and they may go through immediately. This applies to station entrances/exits, shop entrances/exits, building entrances/exits, gates, and public transport vehicle doors when practical. Safety and normal public transport rules always come first." },
+        { name: "Curse of the Goldbären", level: "High", cost: 150, description: "Before the Chasers may board their next public transport vehicle, they must buy a bag of Haribo Goldbären. One Chaser must close their eyes. Another Chaser randomly chooses three gummy bears, one at a time, and gives them to the eyes-closed Chaser. The eyes-closed Chaser must correctly guess the colour/flavour of all three gummy bears. If they get all three correct, the curse is cleared and the Chasers may use public transport again. If they get any wrong, they must wait 5 minutes and then try again with three newly chosen gummy bears. They repeat this until they get all three correct. No peeking. If someone cannot eat gummy bears, the Game Master may choose a safe equivalent sweet." }
       ]
     };
 
@@ -577,25 +596,9 @@
       return state.chasersFrozenUntil && new Date(state.chasersFrozenUntil).getTime() > Date.now();
     }
 
- function saveGame() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-
-  if (!API_URL) return;
-
-  fetch(API_URL, {
-    method: "POST",
-    mode: "no-cors",
-    headers: {
-      "Content-Type": "text/plain"
-    },
-    body: JSON.stringify({
-      action: "saveState",
-      state
-    })
-  }).catch(() => {
-    console.warn("Could not sync to backend. Local save still worked.");
-  });
-}
+    function saveGame() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
 
     function loadGame() {
       const saved = localStorage.getItem(STORAGE_KEY);
@@ -706,8 +709,20 @@
       const randomIndex = Math.floor(Math.random() * challenges.length);
       const selectedChallenge = challenges[randomIndex];
 
-      state.activeChallenge = selectedChallenge;
-      addLog("Challenge Selected", selectedChallenge.name, 0);
+      const challengeForState = { ...selectedChallenge };
+
+      if (challengeForState.type === "worldCupFever") {
+        const countryIndex = Math.floor(Math.random() * worldCupCountries.length);
+        challengeForState.selectedCountry = worldCupCountries[countryIndex];
+      }
+
+      if (challengeForState.type === "populationGuess") {
+        const countryIndex = Math.floor(Math.random() * worldCupCountries.length);
+        challengeForState.selectedCountry = worldCupCountries[countryIndex];
+      }
+
+      state.activeChallenge = challengeForState;
+      addLog("Challenge Selected", challengeForState.name, 0);
       render();
     }
 
@@ -735,11 +750,38 @@
         };
       }
 
-      if (challenge.type === "highRollBonus") {
+      if (challenge.type === "rollFateLow") {
         const roll = Math.floor(Math.random() * 6) + 1;
-        let reward = 50;
-        if (roll >= 3 && roll <= 4) reward = 100;
-        if (roll >= 5) reward = 150;
+        let reward = 0;
+        if (roll === 4) reward = 40;
+        if (roll === 5) reward = 50;
+        if (roll === 6) reward = 60;
+
+        return {
+          reward,
+          detail: `${challenge.name}: app rolled ${roll}`
+        };
+      }
+
+      if (challenge.type === "rollFateMedium") {
+        const roll = Math.floor(Math.random() * 6) + 1;
+        let reward = 0;
+        if (roll === 4) reward = 80;
+        if (roll === 5) reward = 100;
+        if (roll === 6) reward = 120;
+
+        return {
+          reward,
+          detail: `${challenge.name}: app rolled ${roll}`
+        };
+      }
+
+      if (challenge.type === "rollFateHigh") {
+        const roll = Math.floor(Math.random() * 6) + 1;
+        let reward = 0;
+        if (roll === 4) reward = 120;
+        if (roll === 5) reward = 150;
+        if (roll === 6) reward = 180;
 
         return {
           reward,
@@ -768,7 +810,8 @@
 
       const result = calculateChallengeReward(challenge);
       if (!result) {
-        showMessage("This challenge needs a manual result.", "danger");
+        showSpecialChallengeControls(challenge);
+        showMessage("This challenge needs a Game Master result. Use the result buttons shown below the challenge.", "warning");
         return;
       }
 
@@ -778,6 +821,143 @@
 
       addLog("Challenge Completed", `${result.detail}. Earned ${result.reward} coins.`, result.reward);
       showMessage(`Challenge complete. Added ${result.reward} coins.`);
+    }
+
+    function resolveAutoRandomChallenge() {
+      if (!requireRunner()) return;
+
+      if (!state.activeChallenge) {
+        showMessage("There is no active challenge to resolve.", "danger");
+        return;
+      }
+
+      const challenge = state.activeChallenge;
+      const result = calculateChallengeReward(challenge);
+
+      if (!result) {
+        showMessage("This challenge cannot be resolved automatically.", "danger");
+        return;
+      }
+
+      state.currentCoins += result.reward;
+      state.challengesCompletedThisRun += 1;
+      state.activeChallenge = null;
+
+      addLog("Challenge Completed", `${result.detail}. Earned ${result.reward} coins.`, result.reward);
+      showMessage(`${challenge.name} resolved. Added ${result.reward} coins.`);
+    }
+
+    function showSpecialChallengeControls(challenge) {
+      const controls = document.getElementById("specialChallengeControls");
+
+      if (!challenge) {
+        controls.classList.add("hidden");
+        controls.innerHTML = "";
+        return;
+      }
+
+      const type = challenge.type;
+
+      if (type === "rollFateLow" || type === "rollFateMedium" || type === "rollFateHigh") {
+        controls.classList.remove("hidden");
+        controls.innerHTML = `
+          <strong>Roll Your Fate result</strong><br />
+          <button class="success" onclick="resolveAutoRandomChallenge()">🎲 Roll Die and Apply Result</button>
+          <div class="note">This will roll the die in the app, add the correct number of coins, clear the active challenge, and log the result.</div>
+        `;
+        return;
+      }
+
+      if (type === "riskyCoinFlip") {
+        controls.classList.remove("hidden");
+        controls.innerHTML = `
+          <strong>Risky Coin Flip result</strong><br />
+          <button class="success" onclick="resolveAutoRandomChallenge()">🪙 Flip Coin and Apply Result</button>
+          <div class="note">This will flip the coin in the app, add the correct number of coins, clear the active challenge, and log the result.</div>
+        `;
+        return;
+      }
+
+      if (type === "hangmanChallenge") {
+        controls.classList.remove("hidden");
+        controls.innerHTML = `
+          <strong>Hangman Challenge result</strong><br />
+          <button class="success" onclick="resolveSpecialChallenge('reward', 150, 0, 'Runner won Hangman Challenge')">Runner won: +150 coins</button>
+          <button class="warning" onclick="resolveSpecialChallenge('freeze', 0, 10, 'Runner lost Hangman Challenge')">Runner lost: freeze 10 minutes</button>
+        `;
+        return;
+      }
+
+      if (type === "cairnChallenge") {
+        controls.classList.remove("hidden");
+        controls.innerHTML = `
+          <strong>Cairn Challenge result</strong><br />
+          <button class="success" onclick="resolveSpecialChallenge('reward', 100, 0, 'Cairn Challenge succeeded')">Success: +100 coins</button>
+          <button class="warning" onclick="resolveSpecialChallenge('freeze', 0, 5, 'Cairn Challenge failed')">Fail: freeze 5 minutes</button>
+        `;
+        return;
+      }
+
+      if (type === "snackZoneBaby") {
+        controls.classList.remove("hidden");
+        controls.innerHTML = `
+          <strong>Snack Zone Baby! result</strong><br />
+          <button class="warning" onclick="resolveSpecialChallenge('freeze', 0, 10, 'Chasers matched the snack item in time')">Chasers matched item: freeze Runner 10 minutes</button>
+          <button class="success" onclick="resolveSpecialChallenge('reward', 150, 0, 'Chasers failed to match the snack item in time')">Chasers failed: +150 coins</button>
+        `;
+        return;
+      }
+
+      if (type === "populationGuess") {
+        controls.classList.remove("hidden");
+        controls.innerHTML = `
+          <strong>How Many People Live Here? result</strong><br />
+          <button class="success" onclick="resolveSpecialChallenge('reward', 100, 0, 'Runner was closer on population guess')">Runner closer: +100 coins</button>
+          <button class="warning" onclick="resolveSpecialChallenge('freeze', 0, 5, 'Chasers were closer on population guess')">Chasers closer: freeze 5 minutes</button>
+        `;
+        return;
+      }
+
+      if (type === "worldCupFever") {
+        controls.classList.remove("hidden");
+        controls.innerHTML = `
+          <strong>World Cup Fever! result</strong><br />
+          <button class="warning" onclick="resolveSpecialChallenge('freeze', 0, 5, 'Chasers correctly named a squad player in time')">Chasers correct: freeze Runner 5 minutes</button>
+          <button class="success" onclick="resolveSpecialChallenge('reward', 100, 0, 'Chasers failed World Cup Fever')">Chasers failed: +100 coins</button>
+        `;
+        return;
+      }
+
+      controls.classList.add("hidden");
+      controls.innerHTML = "";
+    }
+
+    function resolveSpecialChallenge(outcomeType, reward, freezeMinutes, detail) {
+      if (!requireRunner()) return;
+
+      if (!state.activeChallenge) {
+        showMessage("There is no active challenge to resolve.", "danger");
+        return;
+      }
+
+      const challengeName = state.activeChallenge.name;
+
+      if (outcomeType === "reward") {
+        state.currentCoins += reward;
+        state.challengesCompletedThisRun += 1;
+        state.activeChallenge = null;
+        addLog("Challenge Completed", `${challengeName}: ${detail}. Earned ${reward} coins.`, reward);
+        showMessage(`${challengeName} complete. Added ${reward} coins.`);
+        return;
+      }
+
+      if (outcomeType === "freeze") {
+        state.runnerFrozenUntil = minutesFromNow(freezeMinutes);
+        state.activeChallenge = null;
+        addLog("Challenge Lost", `${challengeName}: ${detail}. Runner frozen for ${freezeMinutes} minutes.`, 0);
+        showMessage(`${challengeName} lost. Runner frozen for ${freezeMinutes} minutes.`, "warning");
+        return;
+      }
     }
 
     function resolveRedBlueVehicle(success) {
@@ -1036,25 +1216,42 @@
       const container = document.getElementById("challengeResult");
       const redBlueControls = document.getElementById("redBlueControls");
 
+      const specialControls = document.getElementById("specialChallengeControls");
+
       if (!state.activeChallenge) {
         container.innerHTML = "No active challenge.";
         redBlueControls.classList.add("hidden");
+        specialControls.classList.add("hidden");
+        specialControls.innerHTML = "";
         return;
       }
 
       const challenge = state.activeChallenge;
 
+      const autoRandomTypes = ["rollFateLow", "rollFateMedium", "rollFateHigh", "riskyCoinFlip"];
+      const completionNote = autoRandomTypes.includes(challenge.type)
+        ? "Use the Roll/Flip button below to resolve this challenge. The generic Challenge Complete button also works, but the button below makes the random result clearer."
+        : "Remember: the Runner may only have one active challenge. If they cannot complete it, tap Challenge Failed.";
+
+      const selectedCountryLine = challenge.selectedCountry
+        ? `<div class="meta">Selected country: ${escapeHtml(challenge.selectedCountry)}</div>`
+        : "";
+
       container.innerHTML = `
         <div class="title-big">${escapeHtml(challenge.name)}</div>
         <div class="meta">${escapeHtml(challenge.difficulty)} — ${escapeHtml(challenge.rewardText)}</div>
+        ${selectedCountryLine}
         <div>${escapeHtml(challenge.description)}</div>
-        <div class="note">Remember: the Runner may only have one active challenge. If they cannot complete it, tap Challenge Failed.</div>
+        <div class="note">${escapeHtml(completionNote)}</div>
       `;
 
       if (challenge.type === "redBlueVehicle") {
         redBlueControls.classList.remove("hidden");
+        specialControls.classList.add("hidden");
+        specialControls.innerHTML = "";
       } else {
         redBlueControls.classList.add("hidden");
+        showSpecialChallengeControls(challenge);
       }
     }
 
