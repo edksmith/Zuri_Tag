@@ -445,6 +445,7 @@
 
   <script>
     const STORAGE_KEY = "zuriTagGameMasterStateV1";
+    const API_URL = "https://script.google.com/macros/s/AKfycbwuBgqKRDjhhxbmsEFmC0thAC6U7bphsPm_Ii4dz4GWFJadJkIII1UKDbrz-DcXfzO7bA/exec";
 
     const STARTING_COINS = 100;
     const REQUIRED_CHALLENGES_TO_WIN = 5;
@@ -598,6 +599,22 @@
 
     function saveGame() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+
+      if (!API_URL) return;
+
+      fetch(API_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: {
+          "Content-Type": "text/plain"
+        },
+        body: JSON.stringify({
+          action: "saveState",
+          state
+        })
+      }).catch(() => {
+        console.warn("Could not sync to backend. Local save still worked.");
+      });
     }
 
     function loadGame() {
